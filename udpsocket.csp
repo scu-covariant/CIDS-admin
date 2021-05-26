@@ -14,7 +14,7 @@ end
 function recive(port, size)
     using network
     var fd = new udp.socket
-    var listener = udp.endpoint_v4(port), sender = new udp.endpoint
+    var listener = udp.endpoint_v4(port), sender = udp.endpoint("0.0.0.0",1235)
     fd.open_v4()
     fd.bind(listener)
     return fd.receive_from(size, sender)
