@@ -11,7 +11,7 @@ function start(account,password)
     @begin
     var cfg = {
             "server":"182.151.28.219",
-            "port":"3306"\
+            "port":"3306"
             }.to_hash_map()
     @end
     # 数据库连接字符串

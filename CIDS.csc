@@ -54,12 +54,16 @@ end
 function menu()
     if if_menu
         begin_window("壁纸系统功能界面",if_menu,{flags.no_collapse,flags.no_move})
+            # LATER
             # var w = 400
             # var h = 600
             # set_window_size(vec2(w, h))
             # set_window_pos(vec2((get_monitor_width(0)-w) / 2,(get_monitor_height(0)-h) / 2))
             if button("浏览全部教室")
                 if_view_places = true
+            end
+            if button("修改壁纸库")
+                # LATER
             end
         end_window()
     end
@@ -103,6 +107,7 @@ function login_window()
                     if_login_success = true
                 end
             end
+            # LATER 图片有问题需要更新
             text(" ")
             text("                                   ") 
             same_line()

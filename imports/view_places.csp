@@ -139,14 +139,33 @@ function edit_background()
         text("壁纸修改操作区：")
         combo_box("选择壁纸##choose_background",current_choose,data.pics_idx) 
         if button("对选中的所有房间更换为该壁纸")
-            var stmt = db.prepare("update places set background = ? where UUID = ?")
-            stmt.bind(0,data.pics_idx[current_choose])
+            ################################ 另一种方式
+            var stat_str = "update places set background=" + data.pics_idx[current_choose] + " where UUID="
+            var cnt = 0
             foreach i in range(data.selected.size)
                 if data.selected[i]
-                    stmt.bind(1,i)
-                    stmt.just_exec()
+                    if cnt == 0
+                        stat_str +=  to_string(i)
+                    else
+                        stat_str += " or UUID=" + to_string(i)
+                    end
+                cnt++
                 end
             end
+            # system.out.println(stat_str)
+            if cnt != 0
+                db.just_exec(stat_str)
+            end
+
+            ######################## 一种感觉不是很快的方式
+            # var stmt = db.prepare("update places set background = ? where UUID = ?")
+            # stmt.bind(0,data.pics_idx[current_choose])
+            # foreach i in range(data.selected.size)
+            #     if data.selected[i]
+            #         stmt.bind(1,i)
+            #         stmt.just_exec()
+            #     end
+            # end
             open_popup("修改成功##popupedit")
             data.init_info()
         end
@@ -271,7 +290,6 @@ function mywindow(if_mywindow)
         separator()
         # 注意，表格布局想要重新布局就得需要创建一个新的”列“，设为1列即为原样
         columns(1,"",false)
-
     end_window()
 
     # other subwindows
