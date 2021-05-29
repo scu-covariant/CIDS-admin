@@ -15,7 +15,7 @@ function start(account,password)
             }.to_hash_map()
     @end
     # 数据库连接字符串
-    var cnt_str = "Driver={MariaDB ODBC 3.0 Driver};Server=" + cfg.server+ ";Port=" + cfg.port + ";Database=scucids;User=" + account + ";Password=" + password + ";Option=3";
+    var cnt_str = "Driver={MariaDB ODBC 3.0 Driver};Server=" + cfg.server+ ";Port=" + cfg.port + ";Database=scucids;User=" + account + ";Password=" + password + ";Option=2048"
     try
         csdbc_adpter = csdbc_mysql.connect_str(cnt_str)
     catch e
