@@ -6,7 +6,7 @@ system.file.remove("./imgui.ini")
 var account = ""
 var password = ""
 var db = db_connector.start(account,password)
-view_places.init(db,account)
+view_places.init(db,account,{})
 # imgui states
 var monitor_w = get_monitor_width(0)
 var monitor_h = get_monitor_height(0)

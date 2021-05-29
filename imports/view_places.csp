@@ -88,13 +88,9 @@ end
 function init(database,account,pics)
     db = database
     data.init_info()
-    data.pics = pics 
-    var res = db.exec("select picID,description from backgrounds")
-    foreach i in res
-        data.description.insert(to_integer(i[0].data),i[1].data)
-    end
-    foreach i in range(pics.size)
-        data.pics_idx.push_back(to_string(i+1))
+    data.pics = pics
+    foreach i in pics
+        data.pics_idx.push_back(to_string(i[0]))
     end
 end
 
@@ -126,11 +122,11 @@ function edit_background()
             end
             opened = true
             if begin_popup_modal("##popupimage"+ i + "_" + i,opened,{flags.no_move,flags.always_auto_resize})
-                image(data.pics[i+1],vec2(1000,1000))
+                image(data.pics[i][1],vec2(1000,1000))
                 end_popup() 
             end
             next_column()
-            text(data.description[i+1])
+            text(data.pics[i][2])
             separator()
             next_column()
         end
@@ -169,7 +165,7 @@ function edit_background()
             open_popup("修改成功##popupedit")
             data.init_info()
         end
-        image(data.pics[current_choose + 1], vec2(data.pics[current_choose + 1].get_width(),data.pics[current_choose + 1].get_height()) )
+        image(data.pics[current_choose][1], vec2(data.pics[current_choose][1].get_width(),data.pics[current_choose][1].get_height()) )
         opened = true
         if begin_popup_modal("修改成功##popupedit",opened,{flags.no_move,flags.always_auto_resize})
             text("修改成功！")
@@ -278,7 +274,13 @@ function mywindow(if_mywindow)
                         end
                         opened = true
                         if begin_popup_modal("##popupimage"+data.view[i][j].data + "_" + i,opened,{flags.no_move,flags.always_auto_resize})
-                            image(data.pics[ to_integer(data.view[i][j].data)],vec2(1000,1000))
+                            var idx = 0
+                            foreach i in data.pics
+                                if to_integer(data.view[i][j].data) == i[0]
+                                    idx = i[0]
+                                end
+                            end
+                            image(data.pics[idx][1],vec2(1000,1000))
                             end_popup() 
                         end
                     end

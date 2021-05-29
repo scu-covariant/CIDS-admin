@@ -5,8 +5,6 @@ var cmd_args = context.cmd_args
 var cur_dir = runtime.get_current_dir()
 constant sepa = system.path.separator
 constant deli = system.path.delimiter
-
-system.out.println(cur_dir + sepa)
 # bmp到jpg
 function bmp2jpg()
     var pro = process.exec("./trans.exe",{cur_dir + sepa,"2"})

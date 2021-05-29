@@ -2,6 +2,7 @@ import imgui
 import imgui_font
 import db_connector
 import view_places
+import images_func
 var db = null
 using imgui
 
@@ -19,19 +20,17 @@ var if_login_window = true
 var if_view_places = false
 var if_login_success = false
 var if_menu = false
+var if_first_download = 5
 # images
 var scu_image =  load_bmp_image("images/sichuan.bmp")
 var cov_image = load_bmp_image("images/cov.bmp")
 var ins_image = load_bmp_image("images/ins.bmp")
-var back_grounds = new hash_map
-function downloads_images()
-    # LATER
-end
+var back_grounds = new array
 function load_images()
-    var res = db.exec("select * from backgrounds")
+    var res = db.exec("select picid,description from backgrounds order by picid")
     foreach i in res
-        system.out.println("bmp_cache/" + i[0].data + ".bmp")
-        back_grounds.insert(to_integer(i[0].data),load_bmp_image("bmp_cache/" + i[0].data + ".bmp"))
+        # system.out.println("bmp_cache/" + i[0].data + ".bmp")
+        back_grounds.push_back({to_integer(i[0].data),load_bmp_image("bmp_cache/" + i[0].data + ".bmp"),i[1].data})
     end
 end
 # message
@@ -46,8 +45,28 @@ function login_success()
         open_popup("欢迎##popup登录")
     end
     if begin_popup_modal("欢迎##popup登录",if_login_success,{flags.no_move,flags.always_auto_resize})
-        text("登录成功! 欢迎您" + account + "为您转到界面。" )
-        end_popup() 
+        text("登录成功! 欢迎您 " + account + " ,正在下载数据..." )
+        if if_first_download >= 2
+            if_first_download--
+            text("")
+            end_popup() 
+            return
+        else
+            if if_first_download == 1
+                images_func.download_images()
+                load_images()
+                view_places.init(db,account,back_grounds)
+                if_first_download--
+            end
+            if if_first_download == 0
+                text("下载完成！")
+                same_line()
+                if button("确认##confirm_download")
+                    if_login_success = false
+                end    
+                end_popup() 
+            end
+        end
     end
 end
 
@@ -100,8 +119,7 @@ function login_window()
                     exception_string = res
                 else
                     db = res
-                    load_images()
-                    view_places.init(db,account,back_grounds)
+                    images_func.db = db
                     if_menu = true
                     if_login_window = false
                     if_login_success = true
