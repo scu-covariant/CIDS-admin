@@ -1,12 +1,12 @@
 {
-    "include":[],
+    "include":["src"],
     "require":"1.0.0",
     "target":{
         "a":{
-            "file":"CIDS.csc",
+            "file":"./src/CIDS.csc",
             "no-opt": false,
             "compile-only":false,
-            "import_path":["imports"],
+            "import_path":["src/imports"],
             "require" : ["imgui_font","imgui","csdbc_mysql","network","process"],
             "arguments":""
         }
