@@ -2,6 +2,7 @@ package  view_places
 import imgui
 import imgui_font
 import regex
+import process
 using imgui
 # regex number
 var building_key = ""
@@ -180,8 +181,14 @@ function edit_background()
         end_window()
     end
 end
-function get_utc_time()
-    return 65535
+## 时间操作函数
+function get_utc_time(header,tail)
+    var pro = process.exec("./get_utc_second.exe",{})
+    var ifs = pro.out()
+    var str = ifs.getline()
+    tail = to_integer(str.substr(str.size - 8,8))
+    header = str.substr(0,str.size - 8)
+
 end
 
 # 消息全局变量
@@ -233,20 +240,22 @@ function edit_message()
             columns(1,"",false)
             if button("发送消息")
                 var stmt = null
-                var t1 = get_utc_time() # LATER
+                var t1_header = ""
+                var t1_tail = 0
+                get_utc_time(t1_header,t1_tail) # LATER
                 var keep_time = sec_exp_idx + mins_exp_idx * 60
                 if msg_idx == 1
                     var cnt = 0
                     var wait_time = mins_idx * 60 + hours_idx * 3600 + days_idx * 3600 * 24
-                    t1 += wait_time
+                    t1_tail += wait_time
                     var sql_str = "insert into msg (uuid,title,starttime,expiretime,text) values "
-                    var expiretime = keep_time + t1
+                    var expiretime = keep_time + t1_tail
                     foreach i in range(data.selected.size)
                         if data.selected[i]
                             if cnt == 0
-                                sql_str += "(" + to_string(i) + ",\"" + title_buff  + "\"," + t1 + "," + expiretime + ",\"" + text_buff + "\")"
+                                sql_str += "(" + to_string(i) + ",\"" + title_buff  + "\"," + t1_header + to_string(t1_tail) + "," + t1_header + expiretime + ",\"" + text_buff + "\")"
                             else
-                                sql_str += ",(" + to_string(i) + ",\"" + title_buff  + "\"," + t1 + "," + expiretime + ",\"" + text_buff + "\")"
+                                sql_str += ",(" + to_string(i) + ",\"" + title_buff  + "\"," + t1_header + to_string(t1_tail)+ "," + t1_header + expiretime + ",\"" + text_buff + "\")"
                             end
                             cnt++
                         end
@@ -258,13 +267,13 @@ function edit_message()
                 if msg_idx == 0
                     var cnt = 0
                     var sql_str = "insert into msg (uuid,title,starttime,expiretime,text) values "
-                    var expiretime = keep_time+t1
+                    var expiretime = keep_time + t1_tail
                     foreach i in range(data.selected.size)
                         if data.selected[i]
                             if cnt == 0
-                                sql_str += "(" + to_string(i) + ",\"" + title_buff  + "\"," + t1 + "," + expiretime + ",\"" + text_buff + "\")"
+                                sql_str += "(" + to_string(i) + ",\"" + title_buff  + "\"," + t1_header + to_string(t1_tail) + "," + t1_header + expiretime + ",\"" + text_buff + "\")"
                             else
-                                sql_str += ",(" + to_string(i) + ",\"" + title_buff  + "\"," + t1 + "," + expiretime + ",\"" + text_buff + "\")"
+                                sql_str += ",(" + to_string(i) + ",\"" + title_buff  + "\"," + t1_header+ to_string(t1_tail) + "," + t1_header + expiretime + ",\"" + text_buff + "\")"
                             end
                             cnt++
                         end
