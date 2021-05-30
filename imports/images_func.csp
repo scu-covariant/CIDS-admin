@@ -11,19 +11,20 @@ function download_images()
     trans.jpg2bmp()
 end
 
-function update_sigle_image(id,description)
+function update_sigle_image(id)
     var stmt = null
     var ifs = iostream.fstream("./backgrounds/" + to_string(id) + ".jpg", iostream.openmode.bin_in)
     var str = base64.encode_stream(ifs)
     if db.exec("select picid from backgrounds where picid="+to_string(id)).size != 0
-        stmt = db.prepare("update backgrounds set pic=?,description=? where picID=?")
-
+        stmt = db.prepare("update backgrounds set pic=? where picID=?")
+        stmt.bind(0,str)
+        stmt.bind(1,id)
     else
         stmt =  db.prepare("INSERT INTO backgrounds (picid,pic,description)  VALUES  (?,?,?)")
+        stmt.bind(0,id)
+        stmt.bind(1,str)
+        stmt.bind(2,"")
     end
-    stmt.bind(0,id)
-    stmt.bind(2,description)
-    stmt.bind(1,str)
     stmt.just_exec()
 end
 

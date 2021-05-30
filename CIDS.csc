@@ -3,6 +3,7 @@ import imgui_font
 import db_connector
 import view_places
 import images_func
+import edit_backgrounds
 var db = null
 using imgui
 
@@ -20,6 +21,7 @@ var if_login_window = true
 var if_view_places = false
 var if_login_success = false
 var if_menu = false
+var if_edit_backgrounds = false
 var if_first_download = 5
 # images
 var scu_image =  load_bmp_image("images/sichuan.bmp")
@@ -79,10 +81,13 @@ function menu()
             # set_window_size(vec2(w, h))
             # set_window_pos(vec2((get_monitor_width(0)-w) / 2,(get_monitor_height(0)-h) / 2))
             if button("浏览全部教室")
+                back_grounds.clear()
+                load_images()
                 if_view_places = true
             end
             if button("修改壁纸库")
-                # LATER
+                edit_backgrounds.init(db)
+                if_edit_backgrounds = true
             end
         end_window()
     end
@@ -175,6 +180,9 @@ while !app.is_closed()
         menu()
         if if_view_places 
             view_places.mywindow(if_view_places)
+        end
+        if if_edit_backgrounds
+            edit_backgrounds.start(if_edit_backgrounds,back_grounds)
         end
         pop_font()    
     app.render()
