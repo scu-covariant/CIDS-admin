@@ -8,6 +8,8 @@ using imgui
 var building_key = ""
 var number_key = ""
 
+# precision
+iostream.setprecision(32)
 # database
 var db = null
 var monitor_w = get_monitor_width(0)
@@ -32,7 +34,7 @@ namespace data
     var info = new array
     var view = new array
     # 字段列表
-    var tag = {"UUID","地点名称","壁纸编号","消息","消息过期时间"}
+    var tag = {"UUID","地点名称","壁纸编号","消息","消息过期时间（秒）"}
     # 控制升降序
     var stat = {false,false,false,false,false}
     var selected = new array
@@ -41,7 +43,8 @@ namespace data
     var pics_idx = new array
     # generate info
     function init_info()
-        data.info = db.exec("select * from places")
+        var mytime = get_utc_time()
+        data.info = db.exec("select distinct places.UUID,place,background, COALESCE(title,\"\"), if(COALESCE(expiretime,0)=0,0,COALESCE(expiretime,0)-12423423),COALESCE(text,\"\") from places LEFT JOIN msg on places.uuid = msg.uuid order by places.uuid;")
         data.view = data.info
         data.selected.clear()
         foreach i in range(data.info.size + 1)
@@ -182,13 +185,9 @@ function edit_background()
     end
 end
 ## 时间操作函数
-function get_utc_time(header,tail)
-    var pro = process.exec("./get_utc_second.exe",{})
-    var ifs = pro.out()
-    var str = ifs.getline()
-    tail = to_integer(str.substr(str.size - 8,8))
-    header = str.substr(0,str.size - 8)
-
+function get_utc_time()
+    var pro = process.exec("./src/get_utc_second.exe",{})
+    return to_integer(pro.out().getline())
 end
 
 # 消息全局变量
@@ -240,10 +239,10 @@ function edit_message()
             columns(1,"",false)
             if button("发送消息")
                 var stmt = null
-                var t1_header = ""
-                var t1_tail = 0
-                get_utc_time(t1_header,t1_tail) # LATER
+                var t1_tail = get_utc_time()
+                db.just_exec("delete from msg  WHERE expiretime < " + to_string(t1_tail))
                 var keep_time = sec_exp_idx + mins_exp_idx * 60
+                # 延时消息
                 if msg_idx == 1
                     var cnt = 0
                     var wait_time = mins_idx * 60 + hours_idx * 3600 + days_idx * 3600 * 24
@@ -253,9 +252,9 @@ function edit_message()
                     foreach i in range(data.selected.size)
                         if data.selected[i]
                             if cnt == 0
-                                sql_str += "(" + to_string(i) + ",\"" + title_buff  + "\"," + t1_header + to_string(t1_tail) + "," + t1_header + expiretime + ",\"" + text_buff + "\")"
+                                sql_str += "(" + to_string(i) + ",\"" + title_buff  + "\"," +  to_string(t1_tail) + "," + expiretime + ",\"" + text_buff + "\")"
                             else
-                                sql_str += ",(" + to_string(i) + ",\"" + title_buff  + "\"," + t1_header + to_string(t1_tail)+ "," + t1_header + expiretime + ",\"" + text_buff + "\")"
+                                sql_str += ",(" + to_string(i) + ",\"" + title_buff  + "\"," + to_string(t1_tail)+ "," + expiretime + ",\"" + text_buff + "\")"
                             end
                             cnt++
                         end
@@ -264,6 +263,7 @@ function edit_message()
                         db.just_exec(sql_str)
                     end
                 end
+                # 即时消息
                 if msg_idx == 0
                     var cnt = 0
                     var sql_str = "insert into msg (uuid,title,starttime,expiretime,text) values "
@@ -271,9 +271,9 @@ function edit_message()
                     foreach i in range(data.selected.size)
                         if data.selected[i]
                             if cnt == 0
-                                sql_str += "(" + to_string(i) + ",\"" + title_buff  + "\"," + t1_header + to_string(t1_tail) + "," + t1_header + expiretime + ",\"" + text_buff + "\")"
+                                sql_str += "(" + to_string(i) + ",\"" + title_buff  + "\"," + to_string(t1_tail) + "," + expiretime + ",\"" + text_buff + "\")"
                             else
-                                sql_str += ",(" + to_string(i) + ",\"" + title_buff  + "\"," + t1_header+ to_string(t1_tail) + "," + t1_header + expiretime + ",\"" + text_buff + "\")"
+                                sql_str += ",(" + to_string(i) + ",\"" + title_buff  + "\"," + to_string(t1_tail) + "," + expiretime + ",\"" + text_buff + "\")"
                             end
                             cnt++
                         end
@@ -308,6 +308,24 @@ function edit_message()
         end_window()
     end
 end
+function delete_msg()
+    var sql_str = "delete from msg where UUID = "
+    var cnt = 0
+    foreach i in range(data.selected.size)
+        if data.selected[i]
+            if cnt == 0
+                sql_str +=  to_string(i)
+            else
+                sql_str += " or UUID=" + to_string(i)
+            end
+        cnt++
+        end
+    end
+    if cnt!=0
+        db.just_exec(sql_str)
+        data.init_info()
+    end
+end
 
 function mywindow(if_mywindow)
     begin_window("全部教室列表##choose",if_mywindow,{flags.no_resize,flags.no_move,flags.no_collapse})
@@ -332,8 +350,7 @@ function mywindow(if_mywindow)
         end
         separator()
         text("")
-        text("各教室数据预览")
-        same_line()
+        text("各教室数据预览，可以通过单击对应表格浏览壁纸和消息内容!")
         if button("全选")
             foreach record in data.view
                 data.selected[to_integer(record[0].data)] = true
@@ -346,7 +363,7 @@ function mywindow(if_mywindow)
             end
         end
         same_line()
-        text("        ")
+        text("         ")
         same_line()
         if button("修改选中教室壁纸")
             if_edit_background = true
@@ -354,6 +371,10 @@ function mywindow(if_mywindow)
         same_line()
         if button("向选中教室发送消息")
             if_edit_message = true
+        end
+        same_line()
+        if button("清空所选教室消息")
+            delete_msg()
         end
         separator()
         columns(width,"浏览所有信息",true)
@@ -397,6 +418,7 @@ function mywindow(if_mywindow)
                     check_box(data.view[i][0].data+"##box"+data.view[i][0].data,data.selected[to_integer(data.view[i][0].data)])
                 else
                     selectable(to_string(data.view[i][j].data),opened)
+                    # 显示壁纸预览
                     if j == 2
                         if is_item_hovered()&&is_mouse_clicked(0)
                             open_popup("##popupimage"+data.view[i][j].data  +"_" + i)
@@ -413,6 +435,22 @@ function mywindow(if_mywindow)
                                 text("找不到对应的壁纸，请检查壁纸库!")
                             else
                                 image(data.pics[idx][1],vec2(1000,1000))
+                            end
+                            end_popup() 
+                        end
+                    end
+                    # 显示消息预览
+                    if j == 3
+                        if is_item_hovered()&&is_mouse_clicked(0)
+                            open_popup("##popuptext"+data.view[i][j].data  +"_" + i)
+                        end
+                        opened = true
+                        if begin_popup_modal("##popuptext"+data.view[i][j].data + "_" + i,opened,{flags.no_move,flags.always_auto_resize})
+                            if data.view[i][5].data == ""
+                                text("当前教室没有消息！")
+                            else
+                                text("消息内容是：")
+                                text(data.view[i][5].data)
                             end
                             end_popup() 
                         end

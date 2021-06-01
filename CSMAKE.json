@@ -3,7 +3,7 @@
     "require":"1.0.0",
     "target":{
         "a":{
-            "file":"./src/CIDS.csc",
+            "file":"./CIDS.csc",
             "no-opt": false,
             "compile-only":false,
             "import_path":["src/imports"],

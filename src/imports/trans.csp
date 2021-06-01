@@ -7,11 +7,11 @@ constant sepa = system.path.separator
 constant deli = system.path.delimiter
 # bmp到jpg
 function bmp2jpg()
-    var pro = process.exec("./trans.exe",{cur_dir + sepa,"2"})
+    var pro = process.exec("./src/trans.exe",{cur_dir + sepa,"2"})
     pro.wait()
 end
 # jpg到bmp
 function jpg2bmp()
-    var pro = process.exec("./trans.exe",{cur_dir + sepa,"1"})
+    var pro = process.exec("./src/trans.exe",{cur_dir + sepa,"1"})
     pro.wait()
 end
