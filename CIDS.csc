@@ -74,12 +74,10 @@ end
 
 function menu()
     if if_menu
-        begin_window("壁纸系统功能界面",if_menu,{flags.no_collapse,flags.no_move})
+        begin_window("壁纸系统功能界面",if_menu,{flags.no_collapse,flags.no_move,flags.no_title_bar})
             # LATER
-            # var w = 400
-            # var h = 600
-            # set_window_size(vec2(w, h))
-            # set_window_pos(vec2((get_monitor_width(0)-w) / 2,(get_monitor_height(0)-h) / 2))
+            # set_window_size(vec2(get_monitor_width(0)/4, get_monitor_height(0)/4 * 3))
+            # set_window_pos(vec2(0,get_monitor_height(0)/4))
             if button("浏览全部教室")
                 back_grounds.clear()
                 load_images()
@@ -96,7 +94,7 @@ end
 function login_window() 
     if if_login_window
         var opened = true
-        begin_window("壁纸信息分发系统登录",if_login_window,{flags.no_collapse,flags.no_move,flags.no_resize})
+        begin_window("壁纸信息分发系统登录",if_login_window,{flags.no_collapse,flags.no_resize})
             var w = 580
             var h = 800
             set_window_size(vec2(w, h))

@@ -14,8 +14,8 @@ var if_edit_background = false
 # 下拉框辅助
 var current_choose = new number
 # window size !!!!!!!！！注意！后续的你们所有的操作窗口按照这个标准来！！！！
-var operating_window_size = vec2(to_integer(monitor_w/4*3),to_integer(monitor_h/8*7))
-var operating_window_location = vec2(to_integer(monitor_w/4),to_integer(monitor_h/8))
+var operating_window_size = vec2(to_integer(monitor_w/4*3 - 20),to_integer(monitor_h/8*7))
+var operating_window_location = vec2(to_integer(monitor_w/4),20)
 # background array
 var pics = null
 var local_pics = new hash_set

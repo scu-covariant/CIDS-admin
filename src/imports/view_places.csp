@@ -7,7 +7,7 @@ using imgui
 # regex number
 var building_key = ""
 var number_key = ""
-
+var background_key = ""
 # precision
 iostream.setprecision(32)
 # database
@@ -25,8 +25,8 @@ var current_choose = new number
 # var tiny_font = add_font_extend_cn(imgui_font.source_han_sans,18)
 
 # window size !!!!!!!！！注意！后续的你们所有的操作窗口按照这个标准来！！！！
-var operating_window_size = vec2(to_integer(monitor_w/4*3),to_integer(monitor_h/8*7))
-var operating_window_location = vec2(to_integer(monitor_w/4),to_integer(monitor_h/8))
+var operating_window_size = vec2(to_integer(monitor_w/4*3 - 20),to_integer(monitor_h/8*7))
+var operating_window_location = vec2(to_integer(monitor_w/4),20)
 
 #data cache 处理数据的地方
 namespace data
@@ -44,7 +44,8 @@ namespace data
     # generate info
     function init_info()
         var mytime = get_utc_time()
-        data.info = db.exec("select distinct places.UUID,place,background, COALESCE(title,\"\"), if(COALESCE(expiretime,0)=0,0,COALESCE(expiretime,0)-12423423),COALESCE(text,\"\") from places LEFT JOIN msg on places.uuid = msg.uuid order by places.uuid;")
+        db.just_exec("delete from msg  WHERE expiretime < " + to_string(mytime))
+        data.info = db.exec("select places.UUID , place,background, COALESCE(title,\"\"), if(COALESCE(expiretime,0)=0,0,COALESCE(expiretime,0)-"+ mytime+"),COALESCE(text,\"\") from places LEFT JOIN msg on places.uuid = msg.uuid  group by places.uuid order by places.uuid;")
         data.view = data.info
         data.selected.clear()
         foreach i in range(data.info.size + 1)
@@ -68,13 +69,13 @@ namespace data
             end
         end 
     end
-    function view_sieve_building(key1,key2)
+    function view_sieve_building(key1,key2,key3)
         try 
             var reg_key = regex.build(key1)
             var reg_number = regex.build(key2)
             data.view.clear()
             foreach record in data.info
-                if !reg_key.search(record[1].data).empty() && !reg_number.search(record[1].data).empty()
+                if !reg_key.search(record[1].data).empty() && !reg_number.search(record[1].data).empty() && (record[2].data == key3 || key3 == "")
                     data.view.push_back(record)
                 end
             end
@@ -85,6 +86,7 @@ namespace data
             open_popup("发生异常！##popup登录异常")
             number_key = ""
             building_key = ""
+            background_key = ""
             exception_string = "输入错误"
         end
     end
@@ -282,6 +284,7 @@ function edit_message()
                         db.just_exec(sql_str)
                     end
                 end
+                data.init_info()
                 open_popup("修改成功##popupedit_msg")
             end
             same_line()
@@ -339,13 +342,15 @@ function mywindow(if_mywindow)
         text("表格信息筛选器")
         input_text("地点名称##text_place",building_key,50)
         input_text("门牌号",number_key,5)
+        input_text("正在应用的壁纸号",background_key,5)
         if button("清空筛选")
             building_key = ""
             number_key = ""
+            background_key = ""
         end
         same_line()
         if button("筛选")
-            data.view_sieve_building(building_key,number_key)
+            data.view_sieve_building(building_key,number_key,background_key)
             length = data.view.size
         end
         separator()
