@@ -1,19 +1,20 @@
 import csdbc_mysql
 import regex
+import codec.json as json
 package db_connector
 
 var csdbc_adpter = null 
 function start(account,password)
-    # 重新绑定函数
-    var error = system.out.println 
-    var correct = true
     # 主机配置
-    @begin
-    var cfg = {
-            "server":"182.151.28.219",
-            "port":"3306"
-            }.to_hash_map()
-    @end
+    var connect = "login_config.json"
+    var ifs = iostream.ifstream(connect)
+    var cfg = null
+    try 
+        # 测试文件是否符合json规范
+        cfg = json.to_var(json.from_stream(ifs))
+    catch e1
+        return "【ERROR】login_config.json文件未找到或有误！请检查工作路径下是否有该文件且格式正确，否则请查阅教程配置该文件为正确内容。"
+    end
     # 数据库连接字符串
     var cnt_str = "Driver={MariaDB ODBC 3.0 Driver};Server=" + cfg.server+ ";Port=" + cfg.port + ";Database=scucids;User=" + account + ";Password=" + password + ";Option=2048"
     try

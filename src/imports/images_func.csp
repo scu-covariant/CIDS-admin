@@ -3,6 +3,8 @@ import imgui,csdbc_mysql,trans
 import codec.base64.standard as base64
 var db = null
 function download_images()
+    system.path.mkdir("backgrounds")
+    system.path.mkdir("bmp_cache")
     var res = db.exec("select * from backgrounds")
     foreach record in res
         var ofs = iostream.fstream("./backgrounds/" + record[0].data + ".jpg", iostream.openmode.bin_out)
