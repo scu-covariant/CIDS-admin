@@ -3,3 +3,5 @@ build
 dist
 target
 imgui.ini
+backgrounds
+bmp_cache
