@@ -4,8 +4,10 @@
 [![Mainpage](https://img.shields.io/badge/主页-四川大学壁纸分发系统管理员端_发布版仓库-orange)](https://github.com/scu-covariant/CIDS-admin-Release)
 ## 简介
 + 本仓库是SCU—CIDS的Admin端的开发仓库，是一个通过GUI操作数据库实现壁纸分发的程序，由[covscript编程语言](https://github.com/covscript/covscript)开发，四川大学智锐科创计算机协会版权所有。
+
 ## 运行方式
-+ 如果要运行，请在安装CovScript解释器后，装载covscript的[auto make](https://github.com/scu-covariant/csmake)工具进行编译
++ 本仓库中Release中和上方的发布版仓库中都是可以在windows系统中直接运行的版本。
++ 如果要运行开发版，请在安装CovScript解释器后，装载covscript的[auto make](https://github.com/scu-covariant/csmake)工具进行编译
 + 运行前需要先安装【[mariadb-connector-odbc-win64-3.0.2.msi](https://downloads.mariadb.com/Connectors/odbc/connector-odbc-3.0.2/)】以保证数据库功能可以运行！！！！
 + 通过修改login_config.json实现更改要访问的源数据库和端口。
 ## 反馈
