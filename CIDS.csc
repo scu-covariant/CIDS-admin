@@ -94,7 +94,7 @@ end
 function login_window() 
     if if_login_window
         var opened = true
-        begin_window("壁纸信息分发系统登录",if_login_window,{flags.no_collapse,flags.no_resize})
+        begin_window("壁纸信息分发系统登录",if_login_window,{flags.no_collapse,flags.no_resize,no_move})
             var w = 580
             var h = 800
             set_window_size(vec2(w, h))
