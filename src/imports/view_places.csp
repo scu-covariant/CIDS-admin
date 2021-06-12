@@ -179,7 +179,9 @@ function edit_background()
             open_popup("修改成功##popupedit")
             data.reflash()
         end
-        image(data.pics[current_choose][1], vec2(data.pics[current_choose][1].get_width(),data.pics[current_choose][1].get_height()) )
+        var img_width = to_integer(get_monitor_width(0) * 0.7);
+        var img_height = to_integer(img_width * data.pics[current_choose][1].get_height() / data.pics[current_choose][1].get_width())
+        image(data.pics[current_choose][1], vec2(img_width,img_height) )
         opened = true
         if begin_popup_modal("修改成功##popupedit",opened,{flags.no_move,flags.always_auto_resize})
             text("修改成功！")
@@ -248,7 +250,7 @@ function edit_message()
             columns(1,"",false)
             if button("发送消息")
                 var stmt = null
-                var t1_tail = get_utc_time() + 5
+                var t1_tail = get_utc_time() + 1
                 db.just_exec("delete from msg  WHERE expiretime < " + to_string(t1_tail))
                 var keep_time = sec_exp_idx + mins_exp_idx * 60
                 # 延时消息
@@ -449,7 +451,9 @@ function mywindow(if_mywindow)
                             if idx == -1
                                 text("找不到对应的壁纸，请检查壁纸库!")
                             else
-                                image(data.pics[idx][1],vec2(1000,1000))
+                                var img_width = to_integer(get_monitor_width(0) * 0.7)
+                                var img_height = to_integer(img_width * data.pics[idx][1].get_height() / data.pics[idx][1].get_width() )
+                                image(data.pics[idx][1],vec2(img_width,img_height))
                             end
                             end_popup() 
                         end
