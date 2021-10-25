@@ -3,5 +3,6 @@ build
 dist
 target
 imgui.ini
-backgrounds
+backgrounds/
+login_congig.json
 bmp_cache

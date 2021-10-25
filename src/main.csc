@@ -119,7 +119,7 @@ end
 #         system.out.println(i)
 #     end
 # end
-
+ 
 # 初始化数据
 data.init_info()
 system.out.println(data.info)
