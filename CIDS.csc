@@ -63,7 +63,7 @@ set_font_scale(1.0)
 
 function login_success()
     if if_login_success
-        open_popup("欢迎##popup登录")
+        open_popup("欢迎##popup登录") 
     end
     if begin_popup_modal("欢迎##popup登录",if_login_success,{flags.no_move,flags.always_auto_resize})
         text("登录成功! 欢迎您 " + account + " ,正在下载数据..." )
@@ -85,8 +85,8 @@ function login_success()
                 if button("确认##confirm_download")
                     if_login_success = false
                 end    
-                end_popup() 
             end
+            end_popup()
         end
     end
 end
@@ -195,7 +195,7 @@ while !app.is_closed()
         push_font(font)
         # windows
         login_window()
-        login_success()
+
         menu()
         if if_view_places 
             view_places.mywindow(if_view_places)
@@ -203,6 +203,7 @@ while !app.is_closed()
         if if_edit_backgrounds
             edit_backgrounds.start(if_edit_backgrounds,back_grounds)
         end
+        login_success()
         pop_font()    
     app.render()
 end
